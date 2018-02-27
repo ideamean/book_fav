@@ -7,7 +7,6 @@ import (
 )
 
 func init() {
-	beego.Router("/", &controllers.MainController{})
 	beego.Router("/api/douban/book/isbn/:id", &controllers.DoubanController{})
 	beego.Router("/api/book/search", &controllers.BookController{}, "*:Search")
 	beego.Router("/api/book/addpurchase", &controllers.BookController{}, "*:AddPurchase")
