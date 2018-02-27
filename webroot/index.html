@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+	<script src="/js/vender/vue.js"></script>
+	<script src="/js/vender/vue-router.js"></script>
+	<script src="/js/vender/axios.min.js"></script>
+	<link rel="stylesheet" href="//res.wx.qq.com/open/libs/weui/1.1.2/weui.min.css"/>
+	<link rel="stylesheet" href="//unpkg.com/iview/dist/styles/iview.css">
+
+	<script src="//unpkg.com/iview/dist/iview.min.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container">
+
+
+		<div class="page" v-show="!showLogin">
+			<div class="weui-flex">
+	            <div class="weui-flex__item">
+	            	<div v-bind:class='{ "weui-search-bar" : !showSearch,"weui-search-bar weui-search-bar_focusing": showSearch}'>
+			            <form class="weui-search-bar__form" v-on:submit.prevent="">
+			                <div class="weui-search-bar__box">
+			                    <i class="weui-icon-search"></i>
+			                    <input  type="input" class="weui-search-bar__input" v-model="isbn" placeholder="搜索" required="" v-on:keyup.enter="bookSearchByIsbn">
+			                    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+			                </div>
+			                <label class="weui-search-bar__label" v-on:click="showSearchBar" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+			                    <i class="weui-icon-search"></i>
+			                    <span>搜索ISBN</span>
+			                </label>
+			            </form>
+			            <a href="javascript:" class="weui-search-bar__cancel-btn" v-on:click="showSearchBar">取消</a>
+			        </div>
+	            </div>
+	            <div>
+	            	<upload :on-success="imageUploadSuccess" action="/api/book/grtbarcode" accept="image/*" name="barImageFile" :show-upload-list="false">
+				        <i-button type="ghost" icon="ios-cloud-upload-outline"></i-button>
+				    </upload>
+	            </div>
+	        </div>
+
+
+			<div class="weui-cell_warn" style="text-align:center" v-show="searchTipMessage.length>0">{{searchTipMessage}}</div>
+
+			<div class="weui-panel weui-panel_access" v-show="searchResultData != null" v-if="searchResultData != null">
+	            <div class="weui-panel__hd">搜索结果</div>
+	            <div class="weui-panel__bd">
+	                <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+	                    <div class="weui-media-box__hd" style="height:auto">
+	                        <img class="weui-media-box__thumb" v-bind:src="searchResultData.book_info.images.medium" alt="">
+	                    </div>
+	                    <div class="weui-media-box__bd" style="height:94px">
+	                        <h4 class="weui-media-box__title">
+								{{searchResultData.book_info.title}}
+								<i class="weui-icon-success" style="font-size:15px" v-show="searchResultData.purchase.is_purchase == 2"></i>
+							</h4>
+	                        <p class="weui-media-box__desc" style="height:61px">
+								{{searchResultData.book_info.author.join(',')}} | {{searchResultData.book_info.binding}} | {{searchResultData.book_info.publisher}}
+								<br />
+								{{searchResultData.book_info.summary}}
+							</p>
+	                    </div>
+	                </a>
+	            </div>
+	            <div class="weui-panel__ft">
+	            	<div class="weui-cell">
+		                <div class="weui-cell__bd">
+		                    <input class="weui-input" type="text" v-model="purchaseRemark" placeholder="说点什么..." style="text-align: center;" v-show="searchResultData.purchase.is_purchase != 2"/>
+		                </div>
+		            </div>
+	                <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link" style="text-align:center">
+	                    <div class="weui-cell__bd" v-show="searchResultData.purchase.is_purchase != 2" v-on:click="addPurchase(searchResultData.book_info.bid)">加入已购</div>
+	                </a>
+	            </div>
+	        </div>
+
+			<div class="weui-panel weui-panel_access">
+	            <div class="weui-panel__hd">
+					<a href="javascript:void(0);" class="weui-footer__link" style="color:#586c94" v-on:click="setBookListType(1)">所有</a>
+					<a href="javascript:void(0);" class="weui-footer__link" style="color:#586c94" v-on:click="setBookListType(2)">已购</a>
+				</div>
+	            <div class="weui-panel__bd">
+	                <a href="javascript:void(0);" v-for="(item, index) in bookData.book_list" class="weui-media-box weui-media-box_appmsg" v-on:click="addPurchaseFromList(index)">
+	                    <div class="weui-media-box__hd" style="height:auto">
+	                        <img class="weui-media-box__thumb" v-bind:src="item.images.medium" alt="">
+	                    </div>
+	                    <div class="weui-media-box__bd" style="height:94px">
+	                        <h4 class="weui-media-box__title">
+								{{item.title}}
+								<i class="weui-icon-success" style="font-size:15px" v-show="item.isPurchase"></i>
+							</h4>
+	                        <p class="weui-media-box__desc" style="height:61px">
+								{{item.author.join(',')}} | {{item.binding}} | {{item.publisher}}
+								<br />
+								{{item.summary}}
+							</p>
+	                    </div>
+	                </a>
+	            </div>
+	            <div class="weui-panel__ft">
+	                <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link" style="text-align:center">
+	                    <div class="weui-cell__bd" v-on:click="getMore">{{getMoreTxt}}</div>
+	                </a>
+	            </div>
+	        </div>
+
+			<br />
+
+			<div class="weui-footer">
+	            <p class="weui-footer__links">
+	                <a href="javascript:void(0);" class="weui-footer__link">{{app.title}}</a>
+					<a href="javascript:void(0);" class="weui-footer__link">{{app.userInfo.email}}</a>
+					<a href="javascript:void(0);" class="weui-footer__link" v-on:click="logout">退出</a>
+	            </p>
+	            <p class="weui-footer__text">Copyright © 2018 </p>
+	        </div>
+		</div>
+
+		<div class="js_dialog" v-show="showLogin">
+	        <div class="weui-mask"></div>
+	        <div class="weui-dialog" style="max-width:500px;width:95%;">
+	            <div class="weui-dialog__hd"><strong class="weui-dialog__title">登陆</strong></div>
+	            <div class="weui-dialog__bd" style="padding:1.6em 0.5em">
+					<div class="weui-cells weui-cells_form">
+						<div class="weui-cell weui-cell_vcode">
+			                <div class="weui-cell__hd">
+			                    <label class="weui-label" style="text-align:left;width:55px">邮箱</label>
+			                </div>
+			                <div class="weui-cell__bd">
+			                    <input class="weui-input" type="email" v-model="userEmail" placeholder="example@qq.com">
+			                </div>
+			                <div class="weui-cell__ft">
+			                    <button class="weui-vcode-btn" v-on:click="sendEmailCode">发送验证码</button>
+			                </div>
+			            </div>
+					</div>
+					<div class="weui-cell">
+		                <div class="weui-cell__hd">
+							<label class="weui-label" style="text-align:left;width:55px">验证码</label>
+						</div>
+		                <div class="weui-cell__bd">
+		                    <input class="weui-input" v-model="genCode" type="number" pattern="[0-9]*" placeholder="请输入验证码" />
+		                </div>
+		            </div>
+					<div v-show="genCodeMessage.length > 0" class="weui-cell_warn">{{genCodeMessage}}</div>
+				</div>
+	            <div class="weui-dialog__ft">
+	                <a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" v-on:click="login">立即登录</a>
+	            </div>
+	        </div>
+	    </div>
+
+	</div>
+
+    <script src="/js/main.js?v=2"></script>
+  </body>
+</html>
