@@ -24,7 +24,7 @@
 			                <div class="weui-search-bar__box">
 			                    <i class="weui-icon-search"></i>
 			                    <input  type="input" class="weui-search-bar__input" v-model="isbn" placeholder="搜索" required="" v-on:keyup.enter="bookSearchByIsbn">
-			                    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+			                    <a href="javascript:" class="weui-icon-clear" v-on:click="isbn=''"></a>
 			                </div>
 			                <label class="weui-search-bar__label" v-on:click="showSearchBar" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
 			                    <i class="weui-icon-search"></i>
