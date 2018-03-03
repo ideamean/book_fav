@@ -53,8 +53,8 @@
 	                    </div>
 	                    <div class="weui-media-box__bd" style="height:94px">
 	                        <h4 class="weui-media-box__title">
-								{{searchResultData.book_info.title}}
 								<i class="weui-icon-success" style="font-size:15px" v-show="searchResultData.purchase.is_purchase == 2"></i>
+								{{searchResultData.book_info.title}}
 							</h4>
 	                        <p class="weui-media-box__desc" style="height:61px">
 								{{searchResultData.book_info.author.join(',')}} | {{searchResultData.book_info.binding}} | {{searchResultData.book_info.publisher}}
@@ -88,8 +88,8 @@
 	                    </div>
 	                    <div class="weui-media-box__bd" style="height:94px">
 	                        <h4 class="weui-media-box__title">
-								{{item.title}}
 								<i class="weui-icon-success" style="font-size:15px" v-show="item.isPurchase"></i>
+								{{item.title}}
 							</h4>
 	                        <p class="weui-media-box__desc" style="height:61px">
 								{{item.author.join(',')}} | {{item.binding}} | {{item.publisher}}
