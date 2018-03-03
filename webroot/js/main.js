@@ -190,7 +190,12 @@ var app = new Vue({
 		showSearchBar: function () {
 			this.showSearch = !this.showSearch;
 		},
+		imageUploadBefore: function () {
+			this.searchTipMessage = '正在上传...';
+			return true;
+		},
         imageUploadSuccess: function (response, file, fileList) {
+        	this.searchTipMessage = '';
             if (response.errno > 0) {
             	this.searchTipMessage = response.errmsg;
             	return;

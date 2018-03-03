@@ -230,5 +230,12 @@ func GetBookList(searchType string, uid int64, page int, pageSize int) (model.Ap
 		}
 	}
 
+	//查询总个数
+	var bookTotal int
+	var bookFavTotal int
+	db.QueryRow("select count(*) from book_list").Scan(&bookTotal)
+	db.QueryRow("select count(*) from book_purchase where uid=?", uid).Scan(&bookFavTotal)
+	result.BookTotal = bookTotal
+	result.BookFavTotal = bookFavTotal
 	return result, nil
 }

@@ -35,7 +35,7 @@
 			        </div>
 	            </div>
 	            <div>
-	            	<upload :on-success="imageUploadSuccess" action="/api/book/grtbarcode" accept="image/*" name="barImageFile" :show-upload-list="false">
+	            	<upload :on-success="imageUploadSuccess" :before-upload="imageUploadBefore" action="/api/book/grtbarcode" accept="image/*" name="barImageFile" :show-upload-list="false">
 				        <i-button type="ghost" icon="ios-cloud-upload-outline"></i-button>
 				    </upload>
 	            </div>
@@ -78,8 +78,8 @@
 
 			<div class="weui-panel weui-panel_access">
 	            <div class="weui-panel__hd">
-					<a href="javascript:void(0);" class="weui-footer__link" style="color:#586c94" v-on:click="setBookListType(1)">所有</a>
-					<a href="javascript:void(0);" class="weui-footer__link" style="color:#586c94" v-on:click="setBookListType(2)">已购</a>
+					<a href="javascript:void(0);" class="weui-footer__link" style="color:#586c94" v-on:click="setBookListType(1)">所有({{bookData.book_total}})</a>
+					<a href="javascript:void(0);" class="weui-footer__link" style="color:#586c94" v-on:click="setBookListType(2)">已购({{bookData.book_fav_total}})</a>
 				</div>
 	            <div class="weui-panel__bd">
 	                <a href="javascript:void(0);" v-for="(item, index) in bookData.book_list" class="weui-media-box weui-media-box_appmsg" v-on:click="addPurchaseFromList(index)">
@@ -154,6 +154,6 @@
 
 	</div>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js?v=3"></script>
   </body>
 </html>
